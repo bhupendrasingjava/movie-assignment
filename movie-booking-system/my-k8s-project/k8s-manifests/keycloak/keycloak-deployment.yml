@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:21.0.1
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_VENDOR
+          value: MYSQL
+        - name: DB_ADDR
+          value: mysql-service.default.svc.cluster.local
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_DATABASE
+          value: keycloak
+        - name: DB_USER
+          value: keycloak
+        - name: DB_PASSWORD
+          value: password
+        - name: KEYCLOAK_USER
+          value: admin
+        - name: KEYCLOAK_PASSWORD
+          value: admin
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        command:
+        - /opt/keycloak/bin/kc.sh
+        args:
+        - start-dev

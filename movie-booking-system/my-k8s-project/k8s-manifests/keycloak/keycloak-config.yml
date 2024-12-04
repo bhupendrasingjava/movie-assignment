@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-config
+data:
+  realm.json: |
+    {
+      "realm": "myrealm",
+      "enabled": true,
+      "accessTokenLifespan": 60,
+      "ssoSessionIdleTimeout": 600,
+      "ssoSessionMaxLifespan": 36000,
+      "sslRequired": "none",
+      "registrationAllowed": false,
+      "users": [
+        {
+          "username": "admin",
+          "enabled": true,
+          "email": "admin@example.com",
+          "credentials": [
+            {
+              "type": "password",
+              "value": "admin"
+            }
+          ],
+          "realmRoles": ["admin"]
+        }
+      ]
+    }
