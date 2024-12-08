@@ -24,57 +24,76 @@ import com.example.theaterservice.service.TheatreService;
 @RestController
 @RequestMapping("/api/theatres")
 public class TheaterController {
-	
-	private static final Logger logger = LoggerFactory.getLogger(TheaterController.class);
+    
+    private static final Logger logger = LoggerFactory.getLogger(TheaterController.class);
 
-	@Autowired
-	private TheatreService theatreService;
-	
-	@Autowired 
-	private RestTemplate restTemplate;
+    @Autowired
+    private TheatreService theatreService;
+    
+    @Autowired 
+    private RestTemplate restTemplate;
 
-	@PostMapping
-	public Theater createTheatre(@RequestBody Theater theatre) {
-		return theatreService.addTheatre(theatre);
-	}
+    @PostMapping
+    public Theater createTheatre(@RequestBody Theater theatre) {
+        logger.debug("Received request to create a new theatre: {}", theatre);
+        Theater createdTheatre = theatreService.addTheatre(theatre);
+        logger.info("Theatre created successfully: {}", createdTheatre);
+        return createdTheatre;
+    }
 
-	@GetMapping
-	public List<Theater> getAllTheatres() {
-		return theatreService.getAllTheatres();
-	}
+    @GetMapping
+    public List<Theater> getAllTheatres() {
+        logger.debug("Received request to get all theatres");
+        List<Theater> theatres = theatreService.getAllTheatres();
+        logger.info("Retrieved {} theatres", theatres.size());
+        return theatres;
+    }
 
-	@PutMapping("/{id}")
-	public Theater updateTheatre(@PathVariable Long id, @RequestBody Theater theatreDetails) {
-		return theatreService.updateTheatre(id, theatreDetails);
-	}
+    @PutMapping("/{id}")
+    public Theater updateTheatre(@PathVariable Long id, @RequestBody Theater theatreDetails) {
+        logger.debug("Received request to update theatre with id: {}", id);
+        Theater updatedTheatre = theatreService.updateTheatre(id, theatreDetails);
+        logger.info("Theatre with id {} updated successfully: {}", id, updatedTheatre);
+        return updatedTheatre;
+    }
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteTheatre(@PathVariable Long id) {
-		theatreService.deleteTheatre(id);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheatre(@PathVariable Long id) {
+        logger.debug("Received request to delete theatre with id: {}", id);
+        theatreService.deleteTheatre(id);
+        logger.info("Theatre with id {} deleted successfully", id);
+        return ResponseEntity.noContent().build();
+    }
 
-	@PostMapping("/{theatreId}/shows")
-	public Shows createShow(@PathVariable Long theatreId, @RequestBody Shows show) {
-		return theatreService.addShow(theatreId, show);
-	}
+    @PostMapping("/{theatreId}/shows")
+    public Shows createShow(@PathVariable Long theatreId, @RequestBody Shows show) {
+        logger.debug("Received request to create a new show for theatreId: {}", theatreId);
+        Shows createdShow = theatreService.addShow(theatreId, show);
+        logger.info("Show created successfully for theatreId {}: {}", theatreId, createdShow);
+        return createdShow;
+    }
 
-	@PutMapping("/{theatreId}/shows/{showId}")
-	public Shows updateShow(@PathVariable Long theatreId, @PathVariable Long showId, @RequestBody Shows showDetails) {
-		return theatreService.updateShow(theatreId, showId, showDetails);
-	}
+    @PutMapping("/{theatreId}/shows/{showId}")
+    public Shows updateShow(@PathVariable Long theatreId, @PathVariable Long showId, @RequestBody Shows showDetails) {
+        logger.debug("Received request to update show with id: {} for theatreId: {}", showId, theatreId);
+        Shows updatedShow = theatreService.updateShow(theatreId, showId, showDetails);
+        logger.info("Show with id {} updated successfully for theatreId {}: {}", showId, theatreId, updatedShow);
+        return updatedShow;
+    }
 
-	@DeleteMapping("/{theatreId}/shows/{showId}")
-	public ResponseEntity<Void> deleteShow(@PathVariable Long theatreId, @PathVariable Long showId) {
-		theatreService.deleteShow(theatreId, showId);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/{theatreId}/shows/{showId}")
+    public ResponseEntity<Void> deleteShow(@PathVariable Long theatreId, @PathVariable Long showId) {
+        logger.debug("Received request to delete show with id: {} for theatreId: {}", showId, theatreId);
+        theatreService.deleteShow(theatreId, showId);
+        logger.info("Show with id {} deleted successfully for theatreId {}", showId, theatreId);
+        return ResponseEntity.noContent().build();
+    }
 
-	@GetMapping("/movies")
-	public List<Movie> getMoviesFromMovieService() {
-		logger.info("Calling movie-service from theater-service");
-		List<Movie> movies = restTemplate.getForObject("http://localhost:8083/movies/api/movies", List.class);
-		logger.info("Received response from movie-service");
-		return movies;
-	}
+    @GetMapping("/movies")
+    public List<Movie> getMoviesFromMovieService() {
+        logger.info("Calling movie-service from theater-service");
+        List<Movie> movies = restTemplate.getForObject("http://localhost:8083/movies/api/movies", List.class);
+        logger.info("Received response from movie-service with {} movies", movies.size());
+        return movies;
+    }
 }

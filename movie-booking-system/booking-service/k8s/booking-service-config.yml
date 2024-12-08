@@ -1,19 +1,20 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: theater-service-config
+  name: booking-service-config
   namespace: default
 data:
   application.properties: >
-    spring.application.name=theater-service
+    spring.application.name=booking-service
 
-    spring.datasource.url=jdbc:mysql://mysql-service.default.svc.cluster.local:3306/theaters?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    spring.datasource.url=jdbc:mysql://mysql-service.default.svc.cluster.local:3306/bookings?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 
     spring.datasource.username=root
 
     spring.datasource.password=admin
 
     spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
 
     spring.jpa.hibernate.ddl-auto=none
 
@@ -23,17 +24,20 @@ data:
 
     spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
-    server.port=8081
 
-    server.servlet.context-path=/theaters
+    server.port=8084
+
+    server.servlet.context-path=/bookings
 
     eureka.client.serviceUrl.defaultZone=http://eureka-service.default.svc.cluster.local:8761/eureka
 
     eureka.instance.prefer-ip-address=true
 
+
     springdoc.api-docs.enabled=true
 
     springdoc.swagger-ui.enabled=true
+
 
     management.tracing.sampling.probability=1
 

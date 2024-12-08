@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: theater-service
+  name: movie-service
   namespace: default
   labels:
-    app: theater-service
+    app: movie-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: theater-service
+      app: movie-service
   template:
     metadata:
       labels:
-        app: theater-service
+        app: movie-service
     spec:
       containers:
-        - name: theater-service
-          image: theater-service:1.0.1
+        - name: movie-service
+          image: movie-service:1.0.0
           ports:
-            - containerPort: 8081
+            - containerPort: 8083
           envFrom:
             - configMapRef:
-                name: theater-service-config
+                name: movie-service-config
           volumeMounts:
             - name: config-volume
               mountPath: /config
@@ -30,4 +30,4 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: theater-service-config
+            name: movie-service-config

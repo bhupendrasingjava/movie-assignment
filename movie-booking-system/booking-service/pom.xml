@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.booking</groupId>
-	<artifactId>booking-app</artifactId>
+	<artifactId>booking-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>booking-service</name>
 	<description>Spring Boot Booking CRUD Application</description>
@@ -102,6 +102,11 @@
 			<groupId>io.github.openfeign</groupId>
 			<artifactId>feign-micrometer</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>net.logstash.logback</groupId>
+    		<artifactId>logstash-logback-encoder</artifactId>
+    		<version>7.0</version>
 		</dependency>
 
 	</dependencies>

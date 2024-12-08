@@ -15,38 +15,58 @@ import java.util.List;
 @RequestMapping("/api/movies")
 public class MovieController {
 
-	private static final Logger logger = LoggerFactory.getLogger(MovieController.class);
-	
+    private static final Logger logger = LoggerFactory.getLogger(MovieController.class);
+
     @Autowired
     private MovieService movieService;
 
     @GetMapping
     public List<Movie> getAllMovies() {
-    	logger.info("Inside movie-service::MovieController:: Calling movie-service");
-        return movieService.getAllMovies();
+        logger.debug("Received request to get all movies");
+        List<Movie> movies = movieService.getAllMovies();
+        logger.info("Retrieved {} movies", movies.size());
+        return movies;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Movie> getMovieById(@PathVariable Long id) {
+        logger.debug("Received request to get movie by id: {}", id);
         Movie movie = movieService.getMovieById(id);
-        return ResponseEntity.ok(movie);
+        if (movie != null) {
+            logger.info("Retrieved movie: {}", movie);
+            return ResponseEntity.ok(movie);
+        } else {
+            logger.warn("Movie not found with id: {}", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PostMapping
     public ResponseEntity<Movie> addMovie(@RequestBody Movie movie) {
+        logger.debug("Received request to add a new movie: {}", movie);
         Movie savedMovie = movieService.addMovie(movie);
+        logger.info("Movie added successfully: {}", savedMovie);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedMovie);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movieDetails) {
+        logger.debug("Received request to update movie with id: {}", id);
         Movie updatedMovie = movieService.updateMovie(id, movieDetails);
-        return ResponseEntity.ok(updatedMovie);
+        if (updatedMovie != null) {
+            logger.info("Movie with id {} updated successfully: {}", id, updatedMovie);
+            return ResponseEntity.ok(updatedMovie);
+        } else {
+            logger.warn("Movie not found with id: {}", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(@PathVariable Long id) {
+        logger.debug("Received request to delete movie with id: {}", id);
         movieService.deleteMovie(id);
+        logger.info("Movie with id {} deleted successfully", id);
     }
 }

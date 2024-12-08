@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,94 +23,114 @@ import com.example.bookingservice.repository.UserRepository;
 @Service
 public class BookingService {
 
-	@Autowired
-	private BookingRepository bookingRepository;
+    private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
 
-	@Autowired
-	private PaymentContext paymentContext;
+    @Autowired
+    private UserRepository userRepository;
 
-	private final Lock bookingLock = new ReentrantLock();
+    @Autowired
+    private PaymentContext paymentContext;
 
-	public Booking bookTickets(Long userId, int ticketCount, LocalDateTime showTime, double ticketPrice,
-			PaymentStrategy paymentStrategy, BookingFactory bookingFactory) {
-		bookingLock.lock();
-		Booking booking = null;
-		try {
-			User user = userRepository.findById(userId).orElse(null);
-			if (user == null) {
-				throw new RuntimeException("User not found");
-			}
-			double totalCost = calculateTotalCost(ticketCount, showTime, ticketPrice);
-			double discount = calculateDiscount(ticketCount, showTime, ticketPrice);
-			double totalAmount = (ticketCount * ticketPrice) - discount;
+    private final Lock bookingLock = new ReentrantLock();
 
-			// Use the PaymentStrategy for processing the payment
-			boolean paymentSuccessful = paymentStrategy.processPayment(userId, totalAmount);
-			if (!paymentSuccessful) {
-				throw new RuntimeException("Payment failed");
-			}
-			booking = bookingFactory.createBooking();
-			booking.setBookingDetails(userId, ticketCount, showTime, ticketPrice, discount, totalAmount);
-			booking = bookingRepository.save(booking);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			bookingLock.unlock();
-		}
-		return booking;
-	}
+    public Booking bookTickets(Long userId, int ticketCount, LocalDateTime showTime, double ticketPrice,
+            PaymentStrategy paymentStrategy, BookingFactory bookingFactory) {
+        bookingLock.lock();
+        Booking booking = null;
+        try {
+            logger.debug("Attempting to book tickets: userId={}, ticketCount={}, showTime={}, ticketPrice={}", userId, ticketCount, showTime, ticketPrice);
+            User user = userRepository.findById(userId).orElse(null);
+            if (user == null) {
+                logger.error("User not found: userId={}", userId);
+                throw new RuntimeException("User not found");
+            }
+            double totalCost = calculateTotalCost(ticketCount, showTime, ticketPrice);
+            double discount = calculateDiscount(ticketCount, showTime, ticketPrice);
+            double totalAmount = (ticketCount * ticketPrice) - discount;
+            
+            logger.debug("Calculated total cost: {}, discount: {}, total amount: {}", totalCost, discount, totalAmount);
 
+            boolean paymentSuccessful = paymentStrategy.processPayment(userId, totalAmount);
+            if (!paymentSuccessful) {
+                logger.error("Payment failed for userId={}", userId);
+                throw new RuntimeException("Payment failed");
+            }
 
-	public Booking updateBooking(Long id, Booking bookingDetails) {
-		Booking booking = bookingRepository.findById(id).orElse(null);
-		if (booking != null) {
-			booking.setTicketCount(bookingDetails.getTicketCount());
-			booking.setShowTime(bookingDetails.getShowTime());
-			booking.setTotalCost(bookingDetails.getTotalCost());
-			booking.setTotalAmount(bookingDetails.getTotalAmount());
-			booking.setNoOfSeats(bookingDetails.getNoOfSeats());
-			booking.setDiscountApplied(bookingDetails.getDiscountApplied());
-			return bookingRepository.save(booking);
-		}
-		return null;
-	}
+            booking = bookingFactory.createBooking();
+            booking.setBookingDetails(userId, ticketCount, showTime, ticketPrice, discount, totalAmount);
+            booking = bookingRepository.save(booking);
+            logger.info("Booking successful: {}", booking);
+            
+        } catch (Exception e) {
+            logger.error("Error occurred while booking tickets", e);
+        } finally {
+            bookingLock.unlock();
+        }
+        return booking;
+    }
 
-	public Booking getBookingById(Long id) {
-		return bookingRepository.findById(id).orElse(null);
-	}
+    public Booking updateBooking(Long id, Booking bookingDetails) {
+        logger.debug("Received request to update booking with id: {}", id);
+        Booking booking = bookingRepository.findById(id).orElse(null);
+        if (booking != null) {
+            booking.setTicketCount(bookingDetails.getTicketCount());
+            booking.setShowTime(bookingDetails.getShowTime());
+            booking.setTotalCost(bookingDetails.getTotalCost());
+            booking.setTotalAmount(bookingDetails.getTotalAmount());
+            booking.setNoOfSeats(bookingDetails.getNoOfSeats());
+            booking.setDiscountApplied(bookingDetails.getDiscountApplied());
+            Booking updatedBooking = bookingRepository.save(booking);
+            logger.info("Booking with id {} updated successfully: {}", id, updatedBooking);
+            return updatedBooking;
+        } else {
+            logger.error("Booking not found: id={}", id);
+            return null;
+        }
+    }
 
-	public List<Booking> getAllBookings() {
-		return bookingRepository.findAll();
-	}
+    public Booking getBookingById(Long id) {
+        logger.debug("Received request to get booking by id: {}", id);
+        Booking booking = bookingRepository.findById(id).orElse(null);
+        logger.info("Retrieved booking: {}", booking);
+        return booking;
+    }
 
-	public void deleteBooking(Long id) {
-		bookingRepository.deleteById(id);
-	}
+    public List<Booking> getAllBookings() {
+        logger.debug("Received request to get all bookings");
+        List<Booking> bookings = bookingRepository.findAll();
+        logger.info("Retrieved {} bookings", bookings.size());
+        return bookings;
+    }
 
-	public double calculateTotalCost(int ticketCount, LocalDateTime showTime, double ticketPrice) {
-		double discount = calculateDiscount(ticketCount, showTime, ticketPrice);
-		return (ticketCount * ticketPrice) - discount;
-	}
+    public void deleteBooking(Long id) {
+        logger.debug("Received request to delete booking with id: {}", id);
+        bookingRepository.deleteById(id);
+        logger.info("Booking with id {} deleted successfully", id);
+    }
 
-	public double calculateDiscount(int ticketCount, LocalDateTime showTime, double ticketPrice) {
-		double discount = 0.0;
+    public double calculateTotalCost(int ticketCount, LocalDateTime showTime, double ticketPrice) {
+        double discount = calculateDiscount(ticketCount, showTime, ticketPrice);
+        double totalCost = (ticketCount * ticketPrice) - discount;
+        logger.debug("Calculated total cost: ticketCount={}, showTime={}, ticketPrice={}, discount={}, totalCost={}", ticketCount, showTime, ticketPrice, discount, totalCost);
+        return totalCost;
+    }
 
-		// 50% discount on the third ticket
-		if (ticketCount >= 3) {
-			discount += ticketPrice * 0.5;
-		}
+    public double calculateDiscount(int ticketCount, LocalDateTime showTime, double ticketPrice) {
+        double discount = 0.0;
 
-		// 20% discount on afternoon shows
-		LocalTime time = showTime.toLocalTime();
-		if (time.isAfter(LocalTime.NOON) && time.isBefore(LocalTime.of(17, 0))) {
-			discount += ticketCount * ticketPrice * 0.2;
-		}
+        if (ticketCount >= 3) {
+            discount += ticketPrice * 0.5;
+        }
 
-		return discount;
-	}
+        LocalTime time = showTime.toLocalTime();
+        if (time.isAfter(LocalTime.NOON) && time.isBefore(LocalTime.of(17, 0))) {
+            discount += ticketCount * ticketPrice * 0.2;
+        }
+        logger.debug("Calculated discount: ticketCount={}, showTime={}, ticketPrice={}, discount={}", ticketCount, showTime, ticketPrice, discount);
+        return discount;
+    }
 
 }

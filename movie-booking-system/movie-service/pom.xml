@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.movie</groupId>
-	<artifactId>movie-app</artifactId>
+	<artifactId>movie-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>movie-service</name>
 	<description>Spring Boot Movie CRUD Application</description>
@@ -93,6 +93,11 @@
 			<groupId>io.github.openfeign</groupId>
 			<artifactId>feign-micrometer</artifactId>
 			<scope>test</scope>
+		</dependency>
+				<dependency>
+    		<groupId>net.logstash.logback</groupId>
+    		<artifactId>logstash-logback-encoder</artifactId>
+    		<version>7.0</version>
 		</dependency>
 
 	</dependencies>

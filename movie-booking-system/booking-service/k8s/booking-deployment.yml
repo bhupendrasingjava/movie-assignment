@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: theater-service
+  name: booking-service
   namespace: default
   labels:
-    app: theater-service
+    app: booking-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: theater-service
+      app: booking-service
   template:
     metadata:
       labels:
-        app: theater-service
+        app: booking-service
     spec:
       containers:
-        - name: theater-service
-          image: theater-service:1.0.1
+        - name: booking-service
+          image: booking-service:1.0.0
           ports:
-            - containerPort: 8081
+            - containerPort: 8084
           envFrom:
             - configMapRef:
-                name: theater-service-config
+                name: booking-service-config
           volumeMounts:
             - name: config-volume
               mountPath: /config
@@ -30,4 +30,4 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: theater-service-config
+            name: booking-service-config
