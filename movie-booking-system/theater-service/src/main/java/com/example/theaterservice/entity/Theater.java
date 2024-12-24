@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
-
 @Entity
 @Data
 public class Theater {
@@ -22,7 +21,10 @@ public class Theater {
     private String address;
     private String contactNumber;
 
-    public Long getId() {
+    @OneToMany(mappedBy = "theatre", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Shows> shows;
+
+	public Long getId() {
 		return id;
 	}
 
@@ -69,7 +71,6 @@ public class Theater {
 	public void setShows(List<Shows> shows) {
 		this.shows = shows;
 	}
-
-	@OneToMany(mappedBy = "theatre", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Shows> shows;
+    
+    
 }

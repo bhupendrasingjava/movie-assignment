@@ -9,23 +9,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
-
 @Entity
 @Data
 public class Shows {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "theatre_id")
-	@JsonBackReference
-	private Theater theatre;
+    @ManyToOne
+    @JoinColumn(name = "theatre_id")
+    @JsonBackReference
+    private Theater theatre;
 
-	private Long movieId;
-	private String showTime;
-	private int seatCapacity;
-	private int availableSeats;
+    private Long movieId;
+    private String showTime;
+    private int seatCapacity;
+    private int availableSeats;
 	public Long getId() {
 		return id;
 	}
@@ -62,5 +61,6 @@ public class Shows {
 	public void setAvailableSeats(int availableSeats) {
 		this.availableSeats = availableSeats;
 	}
-	
+    
+    
 }

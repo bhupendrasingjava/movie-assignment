@@ -26,10 +26,10 @@
 
 	<dependencies>
 		<!-- Spring Cloud Netflix Eureka Client Dependency -->
-		<dependency>
+	<!--	<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
+		</dependency>-->
 		<!-- Spring Boot Starter Web -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

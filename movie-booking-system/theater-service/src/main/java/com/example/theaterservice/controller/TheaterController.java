@@ -43,7 +43,7 @@ public class TheaterController {
 
     @GetMapping
     public List<Theater> getAllTheatres() {
-        logger.debug("Received request to get all theatres");
+        logger.info("Received request to get all theatres");
         List<Theater> theatres = theatreService.getAllTheatres();
         logger.info("Retrieved {} theatres", theatres.size());
         return theatres;
