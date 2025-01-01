@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking-service
+  namespace: default
+  labels:
+    app: booking-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: booking-service
+  template:
+    metadata:
+      labels:
+        app: booking-service
+    spec:
+      containers:
+        - name: booking-service
+          image: booking-service:1.0.0
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: booking-service-config
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: booking-service-config

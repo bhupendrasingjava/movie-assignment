@@ -1,4 +1,4 @@
-package com.example.kafka.producer.model.booking;
+package com.example.kafka.producer.notification.model;
 
 import java.time.LocalDateTime;
 

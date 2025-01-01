@@ -54,6 +54,14 @@ kubectl scale deployment zipkin --replicas=1 -n default
 
 Create a topic in Kafka:
 
+PS C:\bhupendra\codebase\movie-booking-system\my-k8s-project\docker> docker exec -it kafka kafka-topics --create --topic email --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+Created topic email.
+PS C:\bhupendra\codebase\movie-booking-system\my-k8s-project\docker> docker exec -it kafka kafka-topics --create --topic sms --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+Created topic sms.
+PS C:\bhupendra\codebase\movie-booking-system\my-k8s-project\docker> docker exec -it kafka kafka-topics --list --bootstrap-server localhost:9092
+email
+sms
+
 Navigate to bin directry (Got to root and then go to bin):
 
 kafka-topics --create --topic email --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1

@@ -1,5 +1,5 @@
 
-package com.example.kafka.producer.model.booking;
+package com.example.kafka.producer.notification.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

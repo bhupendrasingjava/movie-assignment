@@ -1,4 +1,4 @@
-package com.example.kafka.producer.scheduler;
+package com.example.kafka.producer.notification.scheduler;
 
 import java.util.List;
 
@@ -7,13 +7,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.example.kafka.producer.model.booking.Booking;
-import com.example.kafka.producer.repository.BookingRepository;
+import com.example.kafka.producer.notification.model.Booking;
+import com.example.kafka.producer.notification.repository.BookingRepository;
 
-@Service
+import jakarta.annotation.PostConstruct;
+
+@Component
 public class NotificationScheduler {
+    
+    @PostConstruct 
+    public void init() { System.out.println("NotificationScheduler bean initialized");}
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationScheduler.class);
 
@@ -23,11 +29,12 @@ public class NotificationScheduler {
     @Autowired
     private BookingRepository bookingRepository;
 
-    @Scheduled(fixedRate = 60000) // Run every minute (adjust as needed)
+    @Scheduled(fixedRate = 5000) // Run every 5 seconds
     public void scheduleNotifications() {
         logger.info("Starting scheduled task to read bookings and send notifications.");
-
+        System.out.println("Inside scheduleNotifications method");
         List<Booking> bookings = bookingRepository.findUpcomingBookings();
+        System.out.println("Total no of booking count =="+bookings.size());
         logger.debug("Fetched bookings: {}", bookings);
 
         for (Booking booking : bookings) {
